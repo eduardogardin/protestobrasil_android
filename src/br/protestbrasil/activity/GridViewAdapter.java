@@ -19,7 +19,7 @@ public class GridViewAdapter extends BaseAdapter implements OnClickListener {
 	private Pagina mPagina;
 	private SmartImageView mSmartImageView;
 	private Animation mAnimacao;
-	private MiniaturaImagem mMiniaturaAtual;
+//	private MiniaturaImagem mMiniaturaAtual;
 	
 	public GridViewAdapter(Context baseContext, Pagina paginaCompleta) {
 		this.mContexto = baseContext;
@@ -48,12 +48,17 @@ public class GridViewAdapter extends BaseAdapter implements OnClickListener {
 			convertView = inflater.inflate(R.layout.grid_view_linha, null);
 			mAnimacao = AnimationUtils.loadAnimation(mContexto, android.R.anim.fade_in);
 		}
-		
-		mMiniaturaAtual = (MiniaturaImagem) getItem(posicao);
+		final MiniaturaImagem mMiniaturaAtual = (MiniaturaImagem) getItem(posicao);
 		mSmartImageView = (SmartImageView) convertView.findViewById(R.idGridViewLinha.imgMiniatura);
 		mSmartImageView.setImageUrl(mMiniaturaAtual.getUrlFotoResolucaoBaixa());
 		mSmartImageView.startAnimation(mAnimacao);
-		mSmartImageView.setOnClickListener(this);
+		mSmartImageView.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				VisualizadorImagemActivity.iniciar(mContexto,mMiniaturaAtual);
+			}
+		});
 		
 		TextView txvUsuario = (TextView) convertView.findViewById(R.idGridViewLinha.txvUsuario);
 		txvUsuario.setText(String.format("por: %s (%s)", mMiniaturaAtual.getNomeUsuario(), mMiniaturaAtual.getNomePessoa()));
@@ -75,7 +80,7 @@ public class GridViewAdapter extends BaseAdapter implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.idGridViewLinha.imgMiniatura:
-				//TODO Invocar a activity que irá abrir o aplicativo do instagram
+				
 				break;
 		}
 	}

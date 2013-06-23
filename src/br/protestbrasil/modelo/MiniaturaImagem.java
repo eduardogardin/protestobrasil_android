@@ -97,10 +97,10 @@ public class MiniaturaImagem implements Serializable {
 	}
 	
 	public static MiniaturaImagem preencherObjeto(JSONObject objetoPai) throws JSONException {
-		MiniaturaImagem miniatura = new MiniaturaImagem();
-        JSONObject dadosUsuario = objetoPai.getJSONObject("user");
-        JSONObject imagens = (JSONObject) objetoPai.getJSONObject("images");
-        JSONObject resolucaoBaixa = (JSONObject) imagens.getJSONObject("low_resolution");
+		MiniaturaImagem miniatura  = new MiniaturaImagem();
+        JSONObject dadosUsuario    = objetoPai.getJSONObject("user");
+        JSONObject imagens         = (JSONObject) objetoPai.getJSONObject("images");
+        JSONObject resolucaoBaixa  = (JSONObject) imagens.getJSONObject("low_resolution");
         JSONObject resolucaoPadrao = (JSONObject) imagens.getJSONObject("standard_resolution");
 
         miniatura.setUrlFotoResolucaoBaixa(resolucaoBaixa.getString("url"));
