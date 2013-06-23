@@ -3,9 +3,9 @@ package br.protestbrasil.modelo;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.util.Log;
 
 public class MiniaturaImagem implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -96,25 +96,20 @@ public class MiniaturaImagem implements Serializable {
 		this.descricaoImagem = descricaoImagem;
 	}
 	
-	public MiniaturaImagem preencherObjeto(JSONObject objetoPai) {
-		MiniaturaImagem miniatura = null;
-		for (int i = 0; i < objetoPai.length(); i++) {
-			miniatura = new MiniaturaImagem();
-            JSONObject dados = (JSONObject) objetoPai.get(i);
-            
-            JSONObject dadosUsuario = dados.getJSONObject("user");
-            JSONObject imagens = (JSONObject) dados.getJSONObject("images");
-            JSONObject resolucaoBaixa = (JSONObject) imagens.getJSONObject("low_resolution");
-            JSONObject resolucaoPadrao = (JSONObject) imagens.getJSONObject("standard_resolution");
+	public static MiniaturaImagem preencherObjeto(JSONObject objetoPai) throws JSONException {
+		MiniaturaImagem miniatura = new MiniaturaImagem();
+        JSONObject dadosUsuario = objetoPai.getJSONObject("user");
+        JSONObject imagens = (JSONObject) objetoPai.getJSONObject("images");
+        JSONObject resolucaoBaixa = (JSONObject) imagens.getJSONObject("low_resolution");
+        JSONObject resolucaoPadrao = (JSONObject) imagens.getJSONObject("standard_resolution");
 
-            miniatura.setUrlFotoResolucaoBaixa(resolucaoBaixa.getString("url"));
-            miniatura.setUrlFotoResolucaoPadrao(resolucaoPadrao.getString("url"));
-            miniatura.setUrlFotoNoInstagram(dados.getString("link"));
-            miniatura.setDescricaoImagem(resolucaoPadrao.getString("url"));
-            miniatura.setNomeUsuario(dadosUsuario.getString("username"));
-            miniatura.setNomePessoa(dadosUsuario.getString("full_name"));	  
-            miniatura.setUrlFotoPerfil(dadosUsuario.getString("profile_picture"));
-        }
-		return new MiniaturaImagem();
+        miniatura.setUrlFotoResolucaoBaixa(resolucaoBaixa.getString("url"));
+        miniatura.setUrlFotoResolucaoPadrao(resolucaoPadrao.getString("url"));
+        miniatura.setUrlFotoNoInstagram(objetoPai.getString("link"));
+        miniatura.setDescricaoImagem(resolucaoPadrao.getString("url"));
+        miniatura.setNomeUsuario(dadosUsuario.getString("username"));
+        miniatura.setNomePessoa(dadosUsuario.getString("full_name"));	  
+        miniatura.setUrlFotoPerfil(dadosUsuario.getString("profile_picture"));
+		return miniatura;
 	}
 }

@@ -62,24 +62,8 @@ public class PrincipalActivity extends Activity implements Runnable {
 	            paginaCompleta.setMinimoId(jsonPaginacao.getLong("min_tag_id"));
 	
 	            for (int i = 0; i < jsonCabecalho.length(); i++) {
-	            	MiniaturaImagem miniatura = new MiniaturaImagem();
-	                JSONObject dados = (JSONObject) jsonCabecalho.get(i);
-	                
-	                JSONObject dadosUsuario = dados.getJSONObject("user");
-	                JSONObject imagens = (JSONObject) dados.getJSONObject("images");
-	                JSONObject resolucaoBaixa = (JSONObject) imagens.getJSONObject("low_resolution");
-	                JSONObject resolucaoPadrao = (JSONObject) imagens.getJSONObject("standard_resolution");
-
-	                miniatura.setUrlFotoResolucaoBaixa(resolucaoBaixa.getString("url"));
-	                miniatura.setUrlFotoResolucaoPadrao(resolucaoPadrao.getString("url"));
-	                miniatura.setUrlFotoNoInstagram(dados.getString("link"));
-	                miniatura.setDescricaoImagem(resolucaoPadrao.getString("url"));
-	                miniatura.setNomeUsuario(dadosUsuario.getString("username"));
-	                miniatura.setNomePessoa(dadosUsuario.getString("full_name"));	  
-	                miniatura.setUrlFotoPerfil(dadosUsuario.getString("profile_picture"));
-	                			
+	            	MiniaturaImagem miniatura = MiniaturaImagem.preencherObjeto((JSONObject)jsonCabecalho.get(i));
 	                paginaCompleta.adicionarMiniatura(miniatura);
-	                Log.d(getClass().getSimpleName() + " Adicionando miniatura: ", resolucaoBaixa.getString("url"));
 	            }
 	        }
 	    } catch (MalformedURLException e) {
