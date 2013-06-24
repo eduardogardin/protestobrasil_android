@@ -79,8 +79,7 @@ public class GridViewAdapter extends BaseAdapter implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.idGridViewLinha.imgMiniatura:
-				
+			case R.idGridViewLinha.imgMiniatura:				
 				break;
 		}
 	}
