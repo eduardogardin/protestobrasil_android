@@ -13,33 +13,60 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.res.Resources.Theme;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.GridView;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 import br.protestbrasil.modelo.MiniaturaImagem;
 import br.protestbrasil.modelo.Pagina;
 
 public class PrincipalActivity extends Activity implements Runnable {
 	private Thread thread;
 	private GridView mGridView;
+	private Pagina paginaCompleta;
+	private ProgressDialog pd;
+	private Handler handler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_principal);
-		
-		mGridView = (GridView) findViewById(R.idPrincipal.gridView);
-		
-		try {
-			mGridView.setAdapter(getGridViewAdapter(getPaginaCompleta()));
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		mGridView = (GridView) findViewById(R.idPrincipal.gridView);		
+		iniciarCarregamento();
+	}
+	
+	
+	private void iniciarCarregamento() {
+		pd =new ProgressDialog(PrincipalActivity.this);
+		pd.setMessage("Carregando Imagens");
+		pd.setCancelable(false);
+		pd.show();
+		handler = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				
+				switch (msg.what) {
+				case 1:
+					mGridView.setAdapter(getGridViewAdapter());
+					break;
+				default:
+					break;
+				}
+			}
+		};
+		Thread thread = new Thread(this);		
+		thread.start();	
 	}
 
-	private ListAdapter getGridViewAdapter(Pagina paginaCompleta) {		
+
+	private ListAdapter getGridViewAdapter() {		
 		return new GridViewAdapter(getBaseContext(), paginaCompleta);
 	}
 
@@ -49,11 +76,22 @@ public class PrincipalActivity extends Activity implements Runnable {
 		return true;
 	}
 	
-	private Pagina getPaginaCompleta() throws Exception {
-		Pagina paginaCompleta = new Pagina();
+	
+	
+	private BufferedReader getReaderJson() throws IOException {
+		String token = "fd8538825477422db9da6dd26ee25a4f";
+		URL url = new URL("https://api.instagram.com/v1/tags/ogiganteacordou/media/recent?callback=?&client_id=" + token);
+		URLConnection tc = url.openConnection();
+        return  new BufferedReader(new InputStreamReader(tc.getInputStream()));
+	}
+
+	@Override
+	public void run() {
+		BufferedReader bufReader = null;
 		String linhaJson = null;
+		paginaCompleta = new Pagina();
 		try {
-			BufferedReader bufReader = getReaderJson();
+			bufReader = getReaderJson();
 
 	        while ((linhaJson = bufReader.readLine()) != null) {
 	            JSONObject jsonLinhaCompleta = new JSONObject(linhaJson);
@@ -72,21 +110,15 @@ public class PrincipalActivity extends Activity implements Runnable {
 	        e.printStackTrace();
 	    } catch (JSONException e) {	
 	        e.printStackTrace();
+	    }finally{
+	    	pd.dismiss();
+	    	handler.sendEmptyMessage(1);
+	    	try {
+				bufReader.close();
+			} catch (IOException e) {
+				Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+			}
 	    }
-		return paginaCompleta;
-	}
-	
-	private BufferedReader getReaderJson() throws IOException {
-		String token = "fd8538825477422db9da6dd26ee25a4f";
-		URL url = new URL("https://api.instagram.com/v1/tags/ogiganteacordou/media/recent?callback=?&client_id=" + token);
-		URLConnection tc = url.openConnection();
-        return  new BufferedReader(new InputStreamReader(tc.getInputStream()));
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public boolean estiverCarregandoImagens() {
